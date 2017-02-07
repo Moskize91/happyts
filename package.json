@@ -1,0 +1,31 @@
+{
+  "name": "happyts",
+  "version": "0.0.1",
+  "description": "Happy to write TypeScript",
+  "main": "lib/index.js",
+  "typings": "lib/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com:Moskize91/happyts.git"
+  },
+  "author": "Tao Zeyu",
+  "license": "MIT",
+  "homepage": "https://github.com/Moskize91/happyts#readme",
+  "scripts": {
+    "build": "tsc -p .",
+    "clean": "rimraf lib",
+    "check": "tslint -c ./tslint.json './src/**/*.ts*'",
+    "publish": "npm run clean && npm run check && npm run build"
+  },
+  "dependencies": {
+  },
+  "devDependencies": {
+    "tslint": "^4.3.1",
+    "rimraf": "^2.5.3",
+    "source-map-loader": "^0.1.6",
+    "typescript": "^2.1.5",
+    "awesome-typescript-loader": "^3.0.0-beta.18",
+    "uglify-loader": "^1.4.0",
+    "webpack": "^1.13.1"
+  }
+}
