@@ -37,7 +37,7 @@ export class ArrayChain<E> implements Chain<E> {
     private nextIndex: number = -1;
 
     public constructor(
-        private readonly array: E[],
+        private readonly array: ReadonlyArray<E>,
     ) {}
 
     public nextElement(step: number): E | undefined {

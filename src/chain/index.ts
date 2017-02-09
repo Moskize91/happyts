@@ -2,17 +2,23 @@
  * Created by taozeyu on 2017/2/7.
  */
 
-import * as chain from "./chain";
+import * as d from "./chain";
 import {ChainContainer} from "./chain_container";
 
-export type ElementType<T extends Object> = null | T | number | string;
+export type Element<T> = null | number | string | Object | Function;
+export type ResolveType<T extends Element<T>> = null | string | {[key: string]: T};
+export type ElementType<T extends Element<T>> = null | ReadonlyArray<T> | (() => T | undefined);
 
-function isArray<E>(array: ElementType<E>[] | ElementType<E> | (() => ElementType<E> | undefined)): array is ElementType<E>[] {
+function isArray<E extends Element<E>>(array: ElementType<E>): array is ReadonlyArray<E> {
     return typeof array === "object" && array instanceof Array;
 }
 
-function isFunction<E>(func: ElementType<E>[] | ElementType<E> | (() => ElementType<E> | undefined)): func is (() => ElementType<E> | undefined) {
+function isFunction<E extends Element<E>>(func: ElementType<E>): func is () => E | undefined {
     return typeof func === "function" && func instanceof Function;
+}
+
+function isString<E extends Element<E>>(str: ResolveType<E>): str is string {
+    return typeof str === "string";
 }
 
 function stringToArray(str: string): string[] {
@@ -24,20 +30,32 @@ function stringToArray(str: string): string[] {
     return array;
 }
 
-export function createChain<E extends Object>(resource?: ElementType<E>[] | ElementType<E> | (() => ElementType<E> | undefined)): ChainContainer<ElementType<E>> {
+export function chain<E extends Element<E>>(resource?: ElementType<E>): ChainContainer<E> {
     if (resource === undefined || resource === null) {
-        return new ChainContainer(new chain.EmptyChain<ElementType<E>>());
-
-    } else if (typeof resource === "string") {
-        return new ChainContainer(new chain.ArrayChain<ElementType<E>>(stringToArray(resource)));
+        return new ChainContainer(new d.EmptyChain<E>());
 
     } else if (isArray(resource)) {
-        return new ChainContainer(new chain.ArrayChain(resource));
+        return new ChainContainer(new d.ArrayChain<E>(resource));
 
     } else if (isFunction(resource)) {
-        return new ChainContainer(new chain.GeneratorChain<ElementType<E>>(resource));
+        return new ChainContainer(new d.GeneratorChain<E>(resource));
 
     } else {
-        return new ChainContainer(new chain.ArrayChain([resource]));
+        throw new Error(`unrecognized resource type. resource type must be array or null or undefined or function() {return ...;}`);
+    }
+}
+
+export function resolve<E extends Element<E>>(resource?: ResolveType<E>): ChainContainer<ResolveType<E>> {
+    if (resource === undefined || resource === null) {
+        return new ChainContainer(new d.EmptyChain<ResolveType<E>>());
+
+    } else if (isString(resource)) {
+        return new ChainContainer(new d.ArrayChain<string>(stringToArray(resource)));
+
+    } else if (typeof resource === "object") {
+        return new ChainContainer(new d.ObjectChain(resource));
+
+    } else {
+        throw new Error(`unrecognized resource type. resource type must be string or object or null or undefined.`);
     }
 }
