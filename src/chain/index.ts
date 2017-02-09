@@ -5,32 +5,19 @@
 import * as d from "./chain";
 import {ChainContainer} from "./chain_container";
 
-export type Element<T> = null | number | string | Object | Function;
-export type ResolveType<T extends Element<T>> = null | string | {[key: string]: T};
-export type ElementType<T extends Element<T>> = null | ReadonlyArray<T> | (() => T | undefined);
+export type Element<O extends Object> = null | number | string | O | Function;
+export type ExtractType<O extends Object, E extends Element<O>> = {[key: string]: E};
+export type ElementType<O extends Object, E extends Element<O>> = null | ReadonlyArray<E> | (() => E | undefined);
 
-function isArray<E extends Element<E>>(array: ElementType<E>): array is ReadonlyArray<E> {
+function isArray<O extends Object, E extends Element<O>>(array: ElementType<O, E>): array is ReadonlyArray<E> {
     return typeof array === "object" && array instanceof Array;
 }
 
-function isFunction<E extends Element<E>>(func: ElementType<E>): func is () => E | undefined {
+function isFunction<O extends Object, E extends Element<O>>(func: ElementType<O, E>): func is () => E | undefined {
     return typeof func === "function" && func instanceof Function;
 }
 
-function isString<E extends Element<E>>(str: ResolveType<E>): str is string {
-    return typeof str === "string";
-}
-
-function stringToArray(str: string): string[] {
-    const array: string[] = [];
-    const strObj: String = new String(str);
-    for (let i = 0; i < strObj.length; ++i) {
-        array[i] = strObj[i];
-    }
-    return array;
-}
-
-export function chain<E extends Element<E>>(resource?: ElementType<E>): ChainContainer<E> {
+export function chain<O extends Object, E extends Element<O>>(resource?: ElementType<O, E>): ChainContainer<E> {
     if (resource === undefined || resource === null) {
         return new ChainContainer(new d.EmptyChain<E>());
 
@@ -45,17 +32,16 @@ export function chain<E extends Element<E>>(resource?: ElementType<E>): ChainCon
     }
 }
 
-export function resolve<E extends Element<E>>(resource?: ResolveType<E>): ChainContainer<ResolveType<E>> {
-    if (resource === undefined || resource === null) {
-        return new ChainContainer(new d.EmptyChain<ResolveType<E>>());
-
-    } else if (isString(resource)) {
-        return new ChainContainer(new d.StringChain(resource));
-
-    } else if (typeof resource === "object") {
-        return new ChainContainer(new d.ObjectChain(resource));
-
-    } else {
-        throw new Error(`unrecognized resource type. resource type must be string or object or null or undefined.`);
+export function extract<O extends Object, E extends Element<O>>(object: ExtractType<O, E>): ChainContainer<ExtractType<O, E>> {
+    if (typeof object !== "object") {
+        throw new Error(`you can only extract a object.`);
     }
+    return new ChainContainer(new d.ObjectChain(object));
+}
+
+export function resolve(str: string): ChainContainer<string> {
+    if (typeof str !== "string") {
+        throw new Error(`you can only resolve a string.`);
+    }
+    return new ChainContainer<string>(new d.StringChain(str));
 }

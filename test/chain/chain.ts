@@ -27,4 +27,27 @@ describe("Chain", () => {
         expect(_.resolve("hello world!").elementAt(-100)).to.equal(undefined);
         expect(_.resolve("hello world!").elementAt(12)).to.equal(undefined);
     });
+
+    it("pick up extracted object elements", () => {
+        let array: {[key: string]: number | string}[] = [];
+        _.extract({a: 1, b: 2, c: "c", d: "d"}).array(array);
+        array = array.sort((o1, o2) => {
+            let key1: string = "";
+            let key2: string = "";
+            for (const k in o1) {
+                key1 = k;
+            };
+            for (const k in o2) {
+                key2 = k;
+            };
+            if (key1 > key2) {
+                return +1;
+            } else if (key1 < key2) {
+                return -1;
+            } else {
+                return 0;
+            }
+        });
+        expect(array).deep.equal([{a: 1}, {b: 2}, {c: "c"}, {d: "d"}]);
+    });
 });

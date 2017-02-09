@@ -43,11 +43,11 @@ export class ChainContainer<E> {
         return this.chain.nextElement(index + 1);
     }
 
-    public array(): E[] {
+    public array(array?: E[]): E[] {
         if (this.chain.isEndless()) {
             throw new Error("Endless chain couldn't convert to array.");
         }
-        const arr: E[] = [];
+        const arr: E[] = array ? array : [];
         let element: E | undefined;
         while ((element = this.chain.nextElement(1)) !== undefined) {
             arr.push(element);
