@@ -5,6 +5,8 @@
 import * as d from "./chain";
 import {ChainContainer} from "./chain_container";
 
+export {SplitResult} from "./chain";
+
 export type Element<O extends Object> = null | number | string | O | Function;
 export type ExtractType<O extends Object, E extends Element<O>> = {[key: string]: E};
 export type ElementType<O extends Object, E extends Element<O>> = null | ReadonlyArray<E> | (() => E | undefined);

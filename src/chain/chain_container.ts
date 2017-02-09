@@ -116,11 +116,11 @@ export class ChainContainer<E> {
         if (typeof numOrCondition === "number") {
             let num = numOrCondition;
             return new ChainContainer(new chain.Skip(this.chain, element => {
-                if (each) {
+                num--;
+                if (each && num >= 0) {
                     each(element);
                 }
-                num--;
-                return num > 0;
+                return num >= 0;
             }));
         } else {
             const condition = numOrCondition;

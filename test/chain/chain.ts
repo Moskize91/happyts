@@ -102,3 +102,80 @@ describe("Chain links methods: filter, map, reverse, each etc.", () => {
         expect(array).deep.equal(["a", "b", "c", "d"]);
     });
 });
+
+describe("Chain others", () => {
+
+    it("fold", () => {
+        expect(_.chain([2, 4, 1, 5]).fold(0, (n1, n2) => n1 + n2)).to.equal(2 + 4 + 1 + 5);
+        expect(_.chain([2, 4, 1, 5]).fold<number[]>([], (arr, n) => [n, ...arr])).deep.equal([5, 1, 4, 2]);
+    });
+
+    it("skip", () => {
+        let array: number[] = [];
+        expect(_.chain([1, 3, 7, 9, 2, 3, 6, 10]).skip(5, num => array.push(num)).array()).deep.equal([
+            3, 6, 10,
+        ]);
+        expect(array).deep.equal([1, 3, 7, 9, 2]);
+
+        array = [];
+        expect(_.chain([1, 3, 7, 9, 2, 3, 6, 10]).skip(num => num < 8, num => array.push(num)).array()).deep.equal([
+            9, 2, 3, 6, 10,
+        ]);
+        expect(array).deep.equal([]);
+
+        expect(_.chain([1, 3, 7, 9, 2, 3, 6, 10]).skip(2).skip(3).array()).deep.equal([
+            3, 6, 10,
+        ]);
+
+        array = [];
+        expect(_.chain([1, 3, 7, 9, 2, 3, 6, 10]).skipTo(7, num => array.push(num)).array()).deep.equal([
+            7, 9, 2, 3, 6, 10,
+        ]);
+        expect(array).deep.equal([1, 3]);
+
+        expect(_.chain([1, 3, 7, 9, 2, 3, 6, 10]).skipTo(7).skipTo(3).array()).deep.equal([
+            3, 6, 10,
+        ]);
+        expect(_.chain([1, 3, 7, 9, 2, 3, 6, 10]).skip(666).skip(666).array()).deep.equal([]);
+        expect(_.chain([1, 3, 7, 9, 2, 3, 6, 10]).skipTo(666).array()).deep.equal([]);
+    });
+
+    it("split", () => {
+        expect(_.chain([1, 2, 3, "enter", 4, 5, "enter", 8, 9 , 666, 999])
+                .split(e => (typeof e === "string" ?
+                        _.SplitResult.SplitBeforeAndDeleteThis :
+                        _.SplitResult.Continue))
+                .map(c => c.array()).array(),
+        ).deep.equal([[1, 2, 3], [4, 5], [8, 9, 666, 999]]);
+
+        expect(_.chain([1, 2, 3, "enter", 4, 5, "enter", 8, 9 , 666, 999])
+            .split(e => (typeof e === "string" ?
+                _.SplitResult.SplitBeforeAndIncludeThis :
+                _.SplitResult.Continue))
+            .map(c => c.array()).array(),
+        ).deep.equal([[1, 2, 3, "enter"], [4, 5, "enter"], [8, 9, 666, 999]]);
+
+        expect(_.chain([1, 2, 3, "enter", 4, 5, "enter", 8, 9 , 666, 999])
+            .split(e => (typeof e === "string" ?
+                _.SplitResult.SplitBefore :
+                _.SplitResult.Continue))
+            .map(c => c.array()).array(),
+        ).deep.equal([[1, 2, 3], ["enter", 4, 5], ["enter", 8, 9, 666, 999]]);
+
+        expect(_.chain([1, 2, 3, "enter", 4, 5, "enter", 8, 9 , 666, 999])
+            .split(() => _.SplitResult.Continue)
+            .map(c => c.array()).array(),
+        ).deep.equal([[1, 2, 3, "enter", 4, 5, "enter", 8, 9 , 666, 999]]);
+    });
+
+    it("many chain", () => {
+        expect(
+            _.chain([2, 4, 100006, 1, 2, 7, 12, 6, 666, -1000, 20000])
+                .filter(n => n > 0)
+                .filter(n => n < 100)
+                .map(n => `good${n}`)
+                .sort()
+                .fold("start", (s1, s2) => `${s1} ${s2}`),
+        ).to.equal("start good1 good12 good2 good2 good4 good6 good7");
+    });
+});
