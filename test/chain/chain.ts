@@ -11,9 +11,10 @@ use(chaiAsPromised);
 describe("Chain", () => {
 
     it("pick up elements", () => {
-        _.chain([1, 2, 3, 4]);
-        _.resolve();
-        expect(123).to.equal(123);
+        expect(_.chain([1, 2, 3, "a", "b"]).first()).to.equal(1);
+        expect(_.chain([1, 2, 3, "a", "b"]).last()).to.equal("b");
+        expect(_.chain([1, 2, 3, "a", "b"]).elementAt(2)).to.equal(3);
+        expect(_.chain([1, 2, 3, "a", "b"]).elementAt(3)).to.equal("a");
     });
 
 });

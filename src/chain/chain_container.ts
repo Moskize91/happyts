@@ -40,7 +40,7 @@ export class ChainContainer<E> {
     }
 
     public elementAt(index: number): E | undefined {
-        return this.chain.nextElement(index);
+        return this.chain.nextElement(index + 1);
     }
 
     public array(): E[] {
