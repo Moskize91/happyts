@@ -105,15 +105,19 @@ export class GeneratorChain<E> implements Chain<E> {
     private count: number = 0;
 
     public constructor(
-        private readonly generator: () => E,
+        private readonly generator: () => E | undefined,
     ) {}
 
     public nextElement(step: number): E | undefined {
-        if (step <= 0) {
-            return undefined;
+        let element: E | undefined;
+        for (let i = 0; i < step; ++i) {
+            element = this.generator();
+            if (element === undefined) {
+                return element;
+            }
+            this.count++;
         }
-        this.count++;
-        return this.generator();
+        return element;
     }
 
     public isEndless(): boolean {
