@@ -8,7 +8,7 @@ import * as _ from "../../src/index";
 
 use(chaiAsPromised);
 
-describe("Chain", () => {
+describe("Build chain and pick up them", () => {
 
     it("pick up elements", () => {
         expect(_.chain([1, 2, 3, "a", "b"]).first()).to.equal(1);
@@ -49,5 +49,17 @@ describe("Chain", () => {
             }
         });
         expect(array).deep.equal([{a: 1}, {b: 2}, {c: "c"}, {d: "d"}]);
+    });
+
+    it("pick element returned by function", () => {
+        let index = 0;
+        expect(_.chain(() => `ts${index++}`).array([], 5)).deep.equal([
+            "ts0", "ts1", "ts2", "ts3", "ts4",
+        ]);
+        expect(_.chain(() => `sp${index++}`).array([], 3)).deep.equal([
+            "sp5", "sp6", "sp7",
+        ]);
+        expect(() => _.chain(() => `fn${index++}`).array([])).to.throw(Error);
+        expect(() => _.chain(() => `fn${index++}`).array()).to.throw(Error);
     });
 });

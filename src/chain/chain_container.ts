@@ -43,16 +43,27 @@ export class ChainContainer<E> {
         return this.chain.nextElement(index + 1);
     }
 
-    public array(array?: E[]): E[] {
-        if (this.chain.isEndless()) {
+    public array(array?: E[] | number, count?: number): E[] {
+        if (typeof array === "number") {
+            count = array;
+            array = [];
+        } else if (array === undefined) {
+            array = [];
+        }
+        if (this.chain.isEndless() && count === undefined) {
             throw new Error("Endless chain couldn't convert to array.");
         }
-        const arr: E[] = array ? array : [];
         let element: E | undefined;
-        while ((element = this.chain.nextElement(1)) !== undefined) {
-            arr.push(element);
+        while (
+            (count === undefined || count > 0) &&
+            (element = this.chain.nextElement(1)) !== undefined
+        ) {
+            array.push(element);
+            if (count !== undefined) {
+                count--;
+            }
         }
-        return arr;
+        return array;
     }
 
     public fold<T>(initValue: T, folder: (value: T, element: E) => T): T {
