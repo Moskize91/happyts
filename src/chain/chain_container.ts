@@ -95,6 +95,10 @@ export class ChainContainer<E> {
         return new ChainContainer(new chain.Reverse(this.chain));
     }
 
+    public sort(comparator?: (e1: E, e2: E) => number): ChainContainer<E> {
+        return new ChainContainer(new chain.Sort(this.chain, comparator));
+    }
+
     public split(spliter: (element: E, index: number, didHandledCount: number) => SplitResult): ChainContainer<ChainContainer<E>> {
         const splitChain = new chain.Spliter(this.chain, spliter);
         return new ChainContainer(new chain.Map(splitChain, chain => new ChainContainer(chain)));

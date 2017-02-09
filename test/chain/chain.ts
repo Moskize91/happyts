@@ -85,6 +85,15 @@ describe("Chain links methods: filter, map, reverse, each etc.", () => {
         ]);
     });
 
+    it("sort", () => {
+        expect(_.chain(["1", "4", "3", "5", "2"]).sort().array()).deep.equal([
+            "1", "2", "3", "4", "5",
+        ]);
+        expect(_.chain([7, 3, 6, 1, 3, 6, 4, 2]).sort((n1, n2) => n2 - n1).array()).deep.equal([
+            7, 6, 6, 4, 3, 3, 2, 1,
+        ]);
+    });
+
     it("each", () => {
         const array: string[] = [];
         const chain = _.chain(["a", "b", "c", "d"]).each(s => array.push(s));

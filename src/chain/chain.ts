@@ -269,6 +269,20 @@ export class Reverse<E> extends ArrayChain<E> {
     }
 }
 
+export class Sort<E> extends ArrayChain<E> {
+
+    public constructor(chain: Chain<E>, comparator?: (e1: E, e2: E) => number) {
+        super(Sort.sort(chain, comparator));
+    }
+
+    private static sort<E>(chain: Chain<E>, comparator?: (e1: E, e2: E) => number): E[] {
+        if (chain.isEndless()) {
+            throw new Error(`can't sort a endless chain.`);
+        }
+        return chainToArray(chain).sort(comparator);
+    }
+}
+
 export class Linker<E0, E1> implements Chain<E0 | E1> {
 
     public constructor(
