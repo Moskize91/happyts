@@ -83,6 +83,10 @@ export class ChainContainer<E> {
         return new ChainContainer(new chain.Map(this.chain, map));
     }
 
+    public each(each: (element: E, index: number) => void): ChainContainer<E> {
+        return new ChainContainer(new chain.Each(this.chain, each));
+    }
+
     public reverse(): ChainContainer<E> {
         return new ChainContainer(new chain.Reverse(this.chain));
     }
