@@ -23,6 +23,10 @@ export class ChainContainer<E> {
         }
     }
 
+    public toString(): string {
+        return "[chain]";
+    }
+
     public first(): E | undefined {
         return this.chain.nextElement(1);
     }

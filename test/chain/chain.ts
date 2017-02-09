@@ -2,7 +2,7 @@
  * Created by taozeyu on 2017/2/9.
  */
 
-import { assert, expect, use } from "chai";
+import {expect, use} from "chai";
 import * as chaiAsPromised from "chai-as-promised";
 import * as _ from "../../src/index";
 
@@ -61,5 +61,35 @@ describe("Build chain and pick up them", () => {
         ]);
         expect(() => _.chain(() => `fn${index++}`).array([])).to.throw(Error);
         expect(() => _.chain(() => `fn${index++}`).array()).to.throw(Error);
+        expect(() => _.chain(() => `fn${index++}`).last()).to.throw(Error);
+    });
+});
+
+describe("Chain links methods: filter, map, reverse, each etc.", () => {
+
+    it("filter", () => {
+        expect(_.chain([1, 2, 3, 4, 5, 6, 7, 8]).filter(num => num % 2 === 0).array()).deep.equal([
+            2, 4, 6, 8,
+        ]);
+    });
+
+    it("map", () => {
+        expect(_.chain([1, 2, 3, 4]).map(s => `abc[${s}]`).array()).deep.equal([
+            "abc[1]", "abc[2]", "abc[3]", "abc[4]",
+        ]);
+    });
+
+    it("reverse", () => {
+        expect(_.chain([1, 2, 3, 4]).reverse().array()).deep.equal([
+            4, 3, 2, 1,
+        ]);
+    });
+
+    it("each", () => {
+        const array: string[] = [];
+        const chain = _.chain(["a", "b", "c", "d"]).each(s => array.push(s));
+        expect(array).deep.equal([]);
+        chain.done();
+        expect(array).deep.equal(["a", "b", "c", "d"]);
     });
 });

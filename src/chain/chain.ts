@@ -141,7 +141,10 @@ export class Filter<E> implements Chain<E> {
     public nextElement(step: number): E | undefined {
         let element: E | undefined;
         for (let i: number = 0; i < step; ++i) {
-            while ((element = this.chain.nextElement(1)) !== undefined && !this.filter(element, this.chain.didReadElementsCount() - 1)) {}
+            while (
+                (element = this.chain.nextElement(1)) !== undefined &&
+                !this.filter(element, this.chain.didReadElementsCount() - 1)
+            ) {}
             if (element === undefined) {
                 return undefined;
             }
