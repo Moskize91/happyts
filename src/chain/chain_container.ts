@@ -11,11 +11,16 @@ export class ChainContainer<E> {
         public readonly chain: chain.Chain<E>,
     ) {}
 
-    public done(): void {
+    public done(each?: (element: E, index: number) => void): void {
         if (this.chain.isEndless()) {
             throw new Error("Endless chain couldn't be done.");
         }
-        while (this.chain.nextElement(1) !== undefined) { }
+        let element: E | undefined;
+        while ((element = this.chain.nextElement(1)) !== undefined) {
+            if (each) {
+                each(element, this.chain.didReadElementsCount() - 1);
+            }
+        }
     }
 
     public first(): E | undefined {
