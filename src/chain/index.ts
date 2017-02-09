@@ -50,7 +50,7 @@ export function resolve<E extends Element<E>>(resource?: ResolveType<E>): ChainC
         return new ChainContainer(new d.EmptyChain<ResolveType<E>>());
 
     } else if (isString(resource)) {
-        return new ChainContainer(new d.ArrayChain<string>(stringToArray(resource)));
+        return new ChainContainer(new d.StringChain(resource));
 
     } else if (typeof resource === "object") {
         return new ChainContainer(new d.ObjectChain(resource));
