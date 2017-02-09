@@ -77,11 +77,11 @@ export class ChainContainer<E> {
     }
 
     public link<T>(chainContainer: ChainContainer<T>): ChainContainer<E | T> {
-        return new ChainContainer(new chain.Linker(this.chain, chainContainer.chain));
+        return new ChainContainer<E | T>(new chain.Linker(this.chain, chainContainer.chain));
     }
 
     public linkTo<T>(chainContainer: ChainContainer<T>): ChainContainer<E | T> {
-        return new ChainContainer(new chain.Linker(chainContainer.chain, this.chain));
+        return new ChainContainer<E | T>(new chain.Linker(chainContainer.chain, this.chain));
     }
 
     public skip(numOrCondition: number | ((element: E) => boolean), each?: ((element: E) => void)): ChainContainer<E> {
