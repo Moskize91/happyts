@@ -4,11 +4,12 @@
 
 import * as chain from "./chain";
 import {SplitResult} from "./chain";
+import {ForkDistributor} from "./chain_fork_and_clone";
 
 export class ChainContainer<E> {
 
     public constructor(
-        public readonly chain: chain.Chain<E>,
+        private readonly chain: chain.Chain<E>,
     ) {}
 
     public done(each?: (element: E, index: number) => void): void {
@@ -118,6 +119,33 @@ export class ChainContainer<E> {
 
     public mergeTo<M, T>(chainContainer: ChainContainer<M>, merge: (element1: M, element2: E) => T): ChainContainer<T> {
         return new ChainContainer(new chain.Merge(chainContainer.chain, this.chain, merge));
+    }
+
+    public fork(names: string[], classify: (element: E) => string): {[name: string]: ChainContainer<E>} {
+        const nameToIndex: {[name: string]: number} = {};
+        for (let i = 0; i < names.length; i ++) {
+            const name = names[i];
+            nameToIndex[name] = i;
+        }
+        const myClassify = (element: E) => {
+            const name = classify(element);
+            if (nameToIndex[name] === undefined) {
+                return `classify return a unrecognized name "${name}".`;
+            }
+            return name;
+        };
+        const chainMap: {[name: string]: chain.Chain<E>} = {};
+        const emptyChain = new chain.EmptyChain<E>();
+        for (const name of names) {
+            chainMap[name] = emptyChain;
+        }
+        ForkDistributor.setChainMap(this.chain, myClassify, chainMap);
+
+        const chainContainerMap: {[name: string]: ChainContainer<E>} = {};
+        for (const name of names) {
+            chainContainerMap[name] = new ChainContainer(chainMap[name]);
+        }
+        return chainContainerMap;
     }
 
     public skip(numOrCondition: number | ((element: E) => boolean), each?: ((element: E) => void)): ChainContainer<E> {

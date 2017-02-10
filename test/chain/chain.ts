@@ -130,6 +130,15 @@ describe("Multi-chain", () => {
                 .array(),
         ).deep.equal(["1-a", "3-b", "7-c", "10-d"]);
     });
+
+    it("fork", () => {
+        const reulsts = _.chain([
+            1, 2, 3, 4, 5, 6, 7
+        ]).fork(["left", "right"], num => (num % 2 === 0 ? "left" : "right"));
+
+        expect(reulsts["left"].array()).deep.equal([2, 4, 6]);
+        expect(reulsts["right"].array()).deep.equal([1, 3, 5, 7]);
+    });
 });
 
 describe("Chain others", () => {
