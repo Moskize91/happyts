@@ -19,15 +19,10 @@ class NodeHub<E> {
 
     public currentNode: Node<E> = {};
     private didClose: boolean = false;
-    private id: number = 0;
-
-    private static nextId: number = 0;
 
     public constructor(
         private readonly resource: NodeHubResource,
-    ) {
-        this.id = NodeHub.nextId++;
-    }
+    ) {}
 
     public pushElement(element: E): void {
         const node = {element};
@@ -41,7 +36,6 @@ class NodeHub<E> {
             return undefined;
         }
         while (!node.next) {
-            const id = this.id;
             const success = this.resource.prepareMoreElements();
             if (!success) {
                 this.didClose = true;

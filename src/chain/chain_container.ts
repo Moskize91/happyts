@@ -130,7 +130,7 @@ export class ChainContainer<E> {
         const myClassify = (element: E) => {
             const name = classify(element);
             if (nameToIndex[name] === undefined) {
-                return `classify return a unrecognized name "${name}".`;
+                throw new Error(`classify return a unrecognized name "${name}".`);
             }
             return name;
         };

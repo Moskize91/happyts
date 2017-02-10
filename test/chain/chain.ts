@@ -132,12 +132,49 @@ describe("Multi-chain", () => {
     });
 
     it("fork", () => {
-        const reulsts = _.chain([
+        const results = _.chain([
             1, 2, 3, 4, 5, 6, 7
         ]).fork(["left", "right"], num => (num % 2 === 0 ? "left" : "right"));
 
-        expect(reulsts["left"].array()).deep.equal([2, 4, 6]);
-        expect(reulsts["right"].array()).deep.equal([1, 3, 5, 7]);
+        expect(results["left"].array()).deep.equal([2, 4, 6]);
+        expect(results["right"].array()).deep.equal([1, 3, 5, 7]);
+
+        expect(() => (_.chain([1]).fork(["f"], () => "d")["f"].done())).to.throw(Error);
+    });
+
+    it("fork is lazy loadings", () => {
+        const array: any[] = [];
+        const results = _.chain([
+            "a", "b", "c", 1, 2, "d", "e", 3, 4, 5,
+        ])
+            .each(e => array.push(e))
+            .fork(["abc", "num"], e => (typeof e === "string" ? "abc" : "num"));
+
+        const {abc, num} = results;
+
+        array.push("step 1");
+        expect(abc.first()).to.equal("a");
+        expect(abc.first()).to.equal("b");
+
+        array.push("step 2");
+        expect(num.first()).to.equal(1);
+
+        array.push("step 3");
+        expect(abc.first()).to.equal("c");
+        expect(abc.first()).to.equal("d");
+
+        array.push("step 4");
+        expect(num.array()).deep.equal([2, 3, 4, 5]);
+        array.push("step 5");
+        expect(abc.array()).deep.equal(["e"]);
+
+        expect(array).deep.equal([
+            "step 1", "a", "b",
+            "step 2", "c", 1,
+            "step 3", 2, "d",
+            "step 4", "e", 3, 4, 5,
+            "step 5",
+        ]);
     });
 });
 
