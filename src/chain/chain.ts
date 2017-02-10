@@ -34,7 +34,7 @@ export class EmptyChain<E> implements Chain<E> {
 
 export class ArrayChain<E> implements Chain<E> {
 
-    private nextIndex: number = -1;
+    private latestSupportIndex: number = -1;
 
     public constructor(
         private readonly array: ReadonlyArray<E>,
@@ -44,8 +44,8 @@ export class ArrayChain<E> implements Chain<E> {
         if (step <= 0) {
             return undefined;
         }
-        this.nextIndex = Math.min(this.nextIndex + step, this.array.length);
-        return this.array[this.nextIndex];
+        this.latestSupportIndex = Math.min(this.latestSupportIndex + step, this.array.length);
+        return this.array[this.latestSupportIndex];
     }
 
     public isEndless(): boolean {
@@ -53,7 +53,7 @@ export class ArrayChain<E> implements Chain<E> {
     }
 
     public didReadElementsCount(): number {
-        return this.nextIndex;
+        return Math.min(this.latestSupportIndex + 1, this.array.length);
     }
 }
 
