@@ -283,7 +283,7 @@ export class Sort<E> extends ArrayChain<E> {
     }
 }
 
-export class Linker<E0, E1> implements Chain<E0 | E1> {
+export class Connection<E0, E1> implements Chain<E0 | E1> {
 
     private leftChainComplete: boolean = false;
 
@@ -315,9 +315,34 @@ export class Linker<E0, E1> implements Chain<E0 | E1> {
     }
 }
 
-// TODO Fork
+export class Merge<E0, E1, T> implements Chain<T> {
 
-// TODO Merge
+    public constructor(
+        private readonly chain0: Chain<E0>,
+        private readonly chain1: Chain<E1>,
+        private readonly merge: (element0: E0, element1: E1) => T,
+    ) {}
+
+    public nextElement(step: number): T | undefined {
+        const element0 = this.chain0.nextElement(step);
+        const element1 = this.chain1.nextElement(step);
+
+        if (element0 !== undefined && element1 !== undefined) {
+            return this.merge(element0, element1);
+        }
+        return undefined;
+    }
+
+    public isEndless(): boolean {
+        return this.chain0.isEndless() && this.chain1.isEndless();
+    }
+
+    public didReadElementsCount(): number {
+        return Math.min(this.chain0.didReadElementsCount(), this.chain1.didReadElementsCount());
+    }
+}
+
+// TODO Fork
 
 export enum SplitResult {
     Continue,

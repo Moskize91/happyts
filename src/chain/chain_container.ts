@@ -104,12 +104,20 @@ export class ChainContainer<E> {
         return new ChainContainer(new chain.Map(splitChain, chain => new ChainContainer(chain)));
     }
 
-    public link<T>(chainContainer: ChainContainer<T>): ChainContainer<E | T> {
-        return new ChainContainer<E | T>(new chain.Linker(this.chain, chainContainer.chain));
+    public connect<T>(chainContainer: ChainContainer<T>): ChainContainer<E | T> {
+        return new ChainContainer<E | T>(new chain.Connection(this.chain, chainContainer.chain));
     }
 
-    public linkTo<T>(chainContainer: ChainContainer<T>): ChainContainer<E | T> {
-        return new ChainContainer<E | T>(new chain.Linker(chainContainer.chain, this.chain));
+    public connectTo<T>(chainContainer: ChainContainer<T>): ChainContainer<E | T> {
+        return new ChainContainer<E | T>(new chain.Connection(chainContainer.chain, this.chain));
+    }
+
+    public merge<M, T>(chainContainer: ChainContainer<M>, merge: (element1: E, element2: M) => T): ChainContainer<T> {
+        return new ChainContainer(new chain.Merge(this.chain, chainContainer.chain, merge));
+    }
+
+    public mergeTo<M, T>(chainContainer: ChainContainer<M>, merge: (element1: M, element2: E) => T): ChainContainer<T> {
+        return new ChainContainer(new chain.Merge(chainContainer.chain, this.chain, merge));
     }
 
     public skip(numOrCondition: number | ((element: E) => boolean), each?: ((element: E) => void)): ChainContainer<E> {
