@@ -47,3 +47,11 @@ export function resolve(str: string): ChainContainer<string> {
     }
     return new ChainContainer<string>(new d.StringChain(str));
 }
+
+export function random(): ChainContainer<number> {
+    return new ChainContainer<number>(new d.GeneratorChain(() => Math.random()));
+}
+
+export function constant<E>(constant: E): ChainContainer<E> {
+    return new ChainContainer<E>(new d.GeneratorChain(() => constant));
+}
