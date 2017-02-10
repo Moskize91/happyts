@@ -103,6 +103,22 @@ describe("Chain links methods: filter, map, reverse, each etc.", () => {
     });
 });
 
+describe("Multi-chain", () => {
+
+    it("link", () => {
+        expect(
+            _.chain([1, 3, 5, 2]).link(_.chain([999, 666, 888])).array(),
+        ).deep.equal([
+            1, 3, 5, 2, 999, 666, 888,
+        ]);
+        expect(
+            _.chain([1, 3, 5, 2]).linkTo(_.chain([999, 666, 888])).array(),
+        ).deep.equal([
+            999, 666, 888, 1, 3, 5, 2,
+        ]);
+    });
+});
+
 describe("Chain others", () => {
 
     it("fold", () => {

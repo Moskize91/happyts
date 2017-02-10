@@ -285,24 +285,29 @@ export class Sort<E> extends ArrayChain<E> {
 
 export class Linker<E0, E1> implements Chain<E0 | E1> {
 
+    private leftChainComplete: boolean = false;
+
     public constructor(
         private readonly chain0: Chain<E0>,
         private readonly chain1: Chain<E1>,
     ) {}
 
     public nextElement(step: number): E0 | E1 | undefined {
-        let element: E0 | E1 | undefined;
-        const originalChain0Count = this.chain0.didReadElementsCount();
-        element = this.chain0.nextElement(step);
-        step -= this.chain0.didReadElementsCount() - originalChain0Count;
-        if (step > 0) {
-            element = this.chain1.nextElement(step);
+        if (!this.leftChainComplete) {
+            const originalChain0Count = this.chain0.didReadElementsCount();
+            const element = this.chain0.nextElement(step);
+            if (element !== undefined) {
+                return element;
+            }
+            const afterChain0Count = this.chain0.didReadElementsCount();
+            step = step - (afterChain0Count - originalChain0Count);
+            this.leftChainComplete = true;
         }
-        return element;
+        return this.chain1.nextElement(step);
     }
 
     public isEndless(): boolean {
-        return this.chain0.isEndless() && this.chain1.isEndless();
+        return this.chain0.isEndless() || this.chain1.isEndless();
     }
 
     public didReadElementsCount(): number {
